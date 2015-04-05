@@ -164,7 +164,8 @@
       offset: 0,
       mobile: true,
       live: true,
-      callback: null
+      callback: null,
+      scrollContainer: window
     };
 
     function WOW(options) {
@@ -226,8 +227,8 @@
         }
       }
       if (!this.disabled()) {
-        this.util().addEvent(window, 'scroll', this.scrollHandler);
-        this.util().addEvent(window, 'resize', this.scrollHandler);
+        this.util().addEvent(this.config.scrollContainer, 'scroll', this.scrollHandler);
+        this.util().addEvent(this.config.scrollContainer, 'resize', this.scrollHandler);
         this.interval = setInterval(this.scrollCallback, 50);
       }
       if (this.config.live) {
@@ -259,8 +260,8 @@
 
     WOW.prototype.stop = function() {
       this.stopped = true;
-      this.util().removeEvent(window, 'scroll', this.scrollHandler);
-      this.util().removeEvent(window, 'resize', this.scrollHandler);
+      this.util().removeEvent(this.config.scrollContainer, 'scroll', this.scrollHandler);
+      this.util().removeEvent(this.config.scrollContainer, 'resize', this.scrollHandler);
       if (this.interval != null) {
         return clearInterval(this.interval);
       }
@@ -486,7 +487,7 @@
     WOW.prototype.isVisible = function(box) {
       var bottom, offset, top, viewBottom, viewTop;
       offset = box.getAttribute('data-wow-offset') || this.config.offset;
-      viewTop = window.pageYOffset;
+      viewTop = this.config.scrollContainer === window ? window.pageYOffset : this.config.scrollContainer.scrollTop;
       viewBottom = viewTop + Math.min(this.element.clientHeight, this.util().innerHeight()) - offset;
       top = this.offsetTop(box);
       bottom = top + box.clientHeight;

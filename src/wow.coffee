@@ -107,6 +107,7 @@ class @WOW
     mobile:       true
     live:         true
     callback:     null
+    scrollContainer: window
 
   constructor: (options = {}) ->
     @scrolled = true
@@ -133,8 +134,8 @@ class @WOW
       else
         @applyStyle(box, true) for box in @boxes
     if !@disabled()
-      @util().addEvent window, 'scroll', @scrollHandler
-      @util().addEvent window, 'resize', @scrollHandler
+      @util().addEvent @config.scrollContainer, 'scroll', @scrollHandler
+      @util().addEvent @config.scrollContainer, 'resize', @scrollHandler
       @interval = setInterval @scrollCallback, 50
     if @config.live
       new MutationObserver (records) =>
@@ -147,8 +148,8 @@ class @WOW
   # unbind the scroll event
   stop: ->
     @stopped = true
-    @util().removeEvent window, 'scroll', @scrollHandler
-    @util().removeEvent window, 'resize', @scrollHandler
+    @util().removeEvent @config.scrollContainer, 'scroll', @scrollHandler
+    @util().removeEvent @config.scrollContainer, 'resize', @scrollHandler
     clearInterval @interval if @interval?
 
   sync: (element) ->
@@ -273,7 +274,7 @@ class @WOW
   # check if box is visible
   isVisible: (box) ->
     offset     = box.getAttribute('data-wow-offset') or @config.offset
-    viewTop    = window.pageYOffset
+    viewTop    = if @config.scrollContainer == window then window.pageYOffset else @config.scrollContainer.scrollTop 
     viewBottom = viewTop + Math.min(@element.clientHeight, @util().innerHeight()) - offset
     top        = @offsetTop(box)
     bottom     = top + box.clientHeight
